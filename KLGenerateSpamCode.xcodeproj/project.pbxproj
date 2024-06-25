@@ -3,11 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		24DE523A1F3437910050B37D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 24DE52391F3437910050B37D /* main.m */; };
+		F401B8AF2C2A634600A1F2D9 /* OCCodeGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = F401B8AE2C2A634600A1F2D9 /* OCCodeGenerator.m */; };
+		F401B8B22C2A636100A1F2D9 /* SwiftCodeGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = F401B8B12C2A636100A1F2D9 /* SwiftCodeGenerator.m */; };
+		F401B8B52C2A642F00A1F2D9 /* RandomWordGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = F401B8B42C2A642F00A1F2D9 /* RandomWordGenerator.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +28,12 @@
 /* Begin PBXFileReference section */
 		24934DDF1F0CD64800958090 /* KLGenerateSpamCode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = KLGenerateSpamCode; sourceTree = BUILT_PRODUCTS_DIR; };
 		24DE52391F3437910050B37D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F401B8AD2C2A634600A1F2D9 /* OCCodeGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCCodeGenerator.h; sourceTree = "<group>"; };
+		F401B8AE2C2A634600A1F2D9 /* OCCodeGenerator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCCodeGenerator.m; sourceTree = "<group>"; };
+		F401B8B02C2A636100A1F2D9 /* SwiftCodeGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftCodeGenerator.h; sourceTree = "<group>"; };
+		F401B8B12C2A636100A1F2D9 /* SwiftCodeGenerator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwiftCodeGenerator.m; sourceTree = "<group>"; };
+		F401B8B32C2A642F00A1F2D9 /* RandomWordGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RandomWordGenerator.h; sourceTree = "<group>"; };
+		F401B8B42C2A642F00A1F2D9 /* RandomWordGenerator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RandomWordGenerator.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +66,13 @@
 		24DE52381F3437910050B37D /* KLGenerateSpamCode */ = {
 			isa = PBXGroup;
 			children = (
+				F401B8AD2C2A634600A1F2D9 /* OCCodeGenerator.h */,
+				F401B8AE2C2A634600A1F2D9 /* OCCodeGenerator.m */,
 				24DE52391F3437910050B37D /* main.m */,
+				F401B8B02C2A636100A1F2D9 /* SwiftCodeGenerator.h */,
+				F401B8B12C2A636100A1F2D9 /* SwiftCodeGenerator.m */,
+				F401B8B32C2A642F00A1F2D9 /* RandomWordGenerator.h */,
+				F401B8B42C2A642F00A1F2D9 /* RandomWordGenerator.m */,
 			);
 			path = KLGenerateSpamCode;
 			sourceTree = "<group>";
@@ -72,6 +87,7 @@
 				24934DDB1F0CD64800958090 /* Sources */,
 				24934DDC1F0CD64800958090 /* Frameworks */,
 				24934DDD1F0CD64800958090 /* CopyFiles */,
+				F401B23A2C29513300A1F2D9 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -88,7 +104,8 @@
 		24934DD71F0CD64800958090 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1540;
 				ORGANIZATIONNAME = GAEA;
 				TargetAttributes = {
 					24934DDE1F0CD64800958090 = {
@@ -99,7 +116,7 @@
 			};
 			buildConfigurationList = 24934DDA1F0CD64800958090 /* Build configuration list for PBXProject "KLGenerateSpamCode" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -114,12 +131,25 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		F401B23A2C29513300A1F2D9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		24934DDB1F0CD64800958090 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F401B8B52C2A642F00A1F2D9 /* RandomWordGenerator.m in Sources */,
+				F401B8B22C2A636100A1F2D9 /* SwiftCodeGenerator.m in Sources */,
 				24DE523A1F3437910050B37D /* main.m in Sources */,
+				F401B8AF2C2A634600A1F2D9 /* OCCodeGenerator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,6 +160,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -139,6 +170,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -146,8 +178,10 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -155,9 +189,11 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -183,6 +219,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -192,6 +229,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -199,8 +237,10 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -208,9 +248,11 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -228,6 +270,9 @@
 		24934DE71F0CD64800958090 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "";
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -235,6 +280,9 @@
 		24934DE81F0CD64800958090 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "";
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

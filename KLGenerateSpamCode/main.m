@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #include <stdlib.h>
+#import "SwiftCodeGenerator.h"
+#import "OCCodeGenerator.h"
+#import "RandomWordGenerator.h"
 
 // 命令行修改工程目录下所有 png 资源 hash 值
 // 使用 ImageMagick 进行图片压缩，所以需要安装 ImageMagick，安装方法 brew install imagemagick
@@ -33,6 +36,10 @@ NSString *gOutParameterName = nil;
 NSString *gSpamCodeFuncationCallName = nil;
 NSString *gNewClassFuncationCallName = nil;
 NSString *gSourceCodeDir = nil;
+NSString *workspacePath = nil;
+RandomWordGenerator *randomWordGenerator = nil;
+SwiftCodeGenerator *swiftCodeGenerator = nil;
+OCCodeGenerator *ocCodeGenerator = nil;
 static NSString * const kNewClassDirName = @"NewClass";
 
 #pragma mark - 公共方法
@@ -46,7 +53,7 @@ NSString *randomString(NSInteger length) {
     return ret;
 }
 
-NSString *randomLetter() {
+NSString *randomLetter(void) {
     return [NSString stringWithFormat:@"%C", [kRandomAlphabet characterAtIndex:arc4random_uniform(52)]];
 }
 
@@ -111,6 +118,23 @@ void renameFile(NSString *oldPath, NSString *newPath) {
     }
 }
 
+NSString *relativePath2AbsolutePath(NSString *basePath, NSString *relativePath) {
+    if ([relativePath hasPrefix:@"/"]) {
+        return relativePath;
+    }
+    
+    NSString *tempPath = relativePath;
+    if ([relativePath hasPrefix:@"./"]) {
+        tempPath = [relativePath substringFromIndex:2];
+    }
+    if ([relativePath hasPrefix:@"/"]) {
+        tempPath = [relativePath substringFromIndex:1];
+    }
+    
+    NSString *result = [NSString stringWithFormat:@"%@/%@", basePath, tempPath];
+    return result;
+}
+
 #pragma mark - 主入口
 
 int main(int argc, const char * argv[]) {
@@ -137,6 +161,7 @@ int main(int argc, const char * argv[]) {
         NSString *newClassNamePrefix = nil;
         
         NSFileManager *fm = [NSFileManager defaultManager];
+        workspacePath = [fm currentDirectoryPath];
         for (NSInteger i = 1; i < arguments.count; i++) {
             NSString *argument = arguments[i];
             if (i == 1) {
@@ -176,7 +201,7 @@ int main(int argc, const char * argv[]) {
                 continue;
             }
             if ([argument isEqualToString:@"-modifyClassNamePrefix"]) {
-                NSString *string = arguments[++i];
+                NSString *string = relativePath2AbsolutePath(gSourceCodeDir, arguments[++i]);
                 projectFilePath = [string stringByAppendingPathComponent:@"project.pbxproj"];
                 if (![fm fileExistsAtPath:string isDirectory:&isDirectory] || !isDirectory
                     || ![fm fileExistsAtPath:projectFilePath isDirectory:&isDirectory] || isDirectory) {
@@ -199,7 +224,7 @@ int main(int argc, const char * argv[]) {
                 continue;
             }
             if ([argument isEqualToString:@"-spamCodeOut"]) {
-                outDirString = arguments[++i];
+                outDirString = relativePath2AbsolutePath(gSourceCodeDir, arguments[++i]);
                 if ([fm fileExistsAtPath:outDirString isDirectory:&isDirectory]) {
                     if (!isDirectory) {
                         printf("%s 已存在但不是文件夹，需要传入一个输出文件夹目录\n", [outDirString UTF8String]);
@@ -213,18 +238,42 @@ int main(int argc, const char * argv[]) {
                     }
                 }
                 
-                NSString *newClassOutDirString = [outDirString stringByAppendingPathComponent:kNewClassDirName];
-                if ([fm fileExistsAtPath:newClassOutDirString isDirectory:&isDirectory]) {
-                    if (!isDirectory) {
-                        printf("%s 已存在但不是文件夹\n", [newClassOutDirString UTF8String]);
+//                NSString *newClassOutDirString = [outDirString stringByAppendingPathComponent:kNewClassDirName];
+//                if ([fm fileExistsAtPath:newClassOutDirString isDirectory:&isDirectory]) {
+//                    if (!isDirectory) {
+//                        printf("%s 已存在但不是文件夹\n", [newClassOutDirString UTF8String]);
+//                        return 1;
+//                    }
+//                } else {
+//                    NSError *error = nil;
+//                    if (![fm createDirectoryAtPath:newClassOutDirString withIntermediateDirectories:YES attributes:nil error:&error]) {
+//                        printf("创建输出目录 %s 失败", [newClassOutDirString UTF8String]);
+//                        return 1;
+//                    }
+//                }
+                
+                i++;
+                if (i < arguments.count) {
+                    NSString *wordsLibraryPath = relativePath2AbsolutePath(workspacePath, arguments[i]);
+                    if (![fm fileExistsAtPath:wordsLibraryPath]) {
+                        printf("单词库文件不存在。");
                         return 1;
                     }
-                } else {
-                    NSError *error = nil;
-                    if (![fm createDirectoryAtPath:newClassOutDirString withIntermediateDirectories:YES attributes:nil error:&error]) {
-                        printf("创建输出目录 %s 失败", [newClassOutDirString UTF8String]);
+                    
+                    NSError *error;
+                    NSString *fileContent = [NSString stringWithContentsOfFile:wordsLibraryPath encoding:NSUTF8StringEncoding error:&error];
+                    if (error != nil) {
+                        printf("读取单词库出错: \"%s\"", [[error localizedDescription] UTF8String]);
                         return 1;
                     }
+                    NSArray *wordList = [fileContent componentsSeparatedByString:@"\n"];
+                    randomWordGenerator = [[RandomWordGenerator alloc] initWithWordsLibrary:wordList];
+                    swiftCodeGenerator = [[SwiftCodeGenerator alloc] initWithWordGenerator:randomWordGenerator];
+                    ocCodeGenerator = [[OCCodeGenerator alloc] initWithWordGenerator:randomWordGenerator];
+                }
+                else {
+                    printf("缺少单词库文件参数，参数名需要根在输出目录后面\n");
+                    return 1;
                 }
                 
                 i++;
@@ -235,10 +284,11 @@ int main(int argc, const char * argv[]) {
                         printf("缺少垃圾代码参数名，或参数名\"%s\"不合法(需要字母开头)\n", [gOutParameterName UTF8String]);
                         return 1;
                     }
-                } else {
-                    printf("缺少垃圾代码参数名，参数名需要根在输出目录后面\n");
-                    return 1;
-                }
+                } 
+//                else {
+//                    printf("缺少垃圾代码参数名，参数名需要根在输出目录后面\n");
+//                    return 1;
+//                }
                 
                 i++;
                 if (i < arguments.count) {
@@ -273,12 +323,14 @@ int main(int argc, const char * argv[]) {
             }
             printf("修改 Xcassets 中的图片名称完成\n");
         }
+        
         if (needDeleteComments) {
             @autoreleasepool {
                 deleteComments(gSourceCodeDir, ignoreDirNames);
             }
             printf("删除注释和空行完成\n");
         }
+        
         if (oldProjectName && newProjectName) {
             @autoreleasepool {
                 NSString *dir = gSourceCodeDir.stringByDeletingLastPathComponent;
@@ -286,6 +338,7 @@ int main(int argc, const char * argv[]) {
             }
             printf("修改工程名完成\n");
         }
+        
         if (oldClassNamePrefix && newClassNamePrefix) {
             printf("开始修改类名前缀...\n");
             @autoreleasepool {
@@ -303,6 +356,7 @@ int main(int argc, const char * argv[]) {
             }
             printf("修改类名前缀完成\n");
         }
+        
         if (outDirString) {
             NSMutableString *categoryCallImportString = [NSMutableString string];
             NSMutableString *categoryCallFuncString = [NSMutableString string];
@@ -320,14 +374,16 @@ int main(int argc, const char * argv[]) {
                 }
             });
             
-            NSString *fileName = [gOutParameterName stringByAppendingString:@"CallHeader.h"];
-            NSString *fileContent = [NSString stringWithFormat:@"%@\n%@return ret;\n}", categoryCallImportString, categoryCallFuncString];
-            [fileContent writeToFile:[outDirString stringByAppendingPathComponent:fileName] atomically:YES encoding:NSUTF8StringEncoding error:nil];
-            
-            fileName = [kNewClassDirName stringByAppendingString:@"CallHeader.h"];
-            fileContent = [NSString stringWithFormat:@"%@\n%@return ret;\n}", newClassCallImportString, newClassCallFuncString];
-            [fileContent writeToFile:[[outDirString stringByAppendingPathComponent:kNewClassDirName] stringByAppendingPathComponent:fileName] atomically:YES encoding:NSUTF8StringEncoding error:nil];
-            
+            if (categoryCallFuncString.length || categoryCallImportString.length) {
+                NSString *fileName = [gOutParameterName stringByAppendingString:@"CallHeader.h"];
+                NSString *fileContent = [NSString stringWithFormat:@"%@\n%@return ret;\n}", categoryCallImportString, categoryCallFuncString];
+                [fileContent writeToFile:[outDirString stringByAppendingPathComponent:fileName] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+                
+                fileName = [kNewClassDirName stringByAppendingString:@"CallHeader.h"];
+                fileContent = [NSString stringWithFormat:@"%@\n%@return ret;\n}", newClassCallImportString, newClassCallFuncString];
+                [fileContent writeToFile:[[outDirString stringByAppendingPathComponent:kNewClassDirName] stringByAppendingPathComponent:fileName] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+            }
+
             printf("生成垃圾代码完成\n");
         }
     }
@@ -557,6 +613,7 @@ void generateSpamCodeFile(NSString *outDirectory, NSString *mFilePath, GSCSource
 }
 
 static NSString *const kSwiftFileTemplate = @"\
+import UIKit\n\
 %@\n\
 extension %@ {\n%@\
 }\n";
@@ -568,7 +625,7 @@ void generateSwiftSpamCodeFile(NSString *outDirectory, NSString *swiftFilePath) 
     NSString *swiftFileContent = [NSString stringWithContentsOfFile:swiftFilePath encoding:NSUTF8StringEncoding error:nil];
     
     // 查找 class 声明
-    NSRegularExpression *expression = [NSRegularExpression regularExpressionWithPattern:@" *(class|struct) +(\\w+)[^{]+" options:NSRegularExpressionUseUnicodeWordBoundaries error:nil];
+    NSRegularExpression *expression = [NSRegularExpression regularExpressionWithPattern:@".*(class|struct) +(\\w+)[^{]+" options:NSRegularExpressionUseUnicodeWordBoundaries error:nil];
     NSArray<NSTextCheckingResult *> *matches = [expression matchesInString:swiftFileContent options:0 range:NSMakeRange(0, swiftFileContent.length)];
     if (matches.count <= 0) return;
     
@@ -580,7 +637,7 @@ void generateSwiftSpamCodeFile(NSString *outDirectory, NSString *swiftFilePath) 
         if (matchEndIndex < braceEndIndex) return;
         // 是 class 方法，过掉
         NSString *fullMatchString = [swiftFileContent substringWithRange:classResult.range];
-        if ([fullMatchString containsString:@"("]) return;
+        if ([fullMatchString containsString:@"("] || [fullMatchString containsString:@"private"]) return;
         
         NSRange braceRange = getOutermostCurlyBraceRange(swiftFileContent, '{', '}', matchEndIndex);
         braceEndIndex = braceRange.location + braceRange.length;
@@ -602,8 +659,7 @@ void generateSwiftSpamCodeFile(NSString *outDirectory, NSString *swiftFilePath) 
                 oldParameterName = [@", " stringByAppendingString:oldParameterName];
             }
             if (![funcName containsString:@"<"] && ![funcName containsString:@">"]) {
-                funcName = [NSString stringWithFormat:@"%@%@", funcName, randomString(5)];
-                [methodsString appendFormat:kSwiftMethodTemplate, funcName, gOutParameterName.capitalizedString, gOutParameterName, oldParameterName, gOutParameterName];
+                [methodsString appendString:[swiftCodeGenerator generateFunction]];
             } else {
                 NSLog(@"string contains `[` or `]` bla! funcName: %@", funcName);
             }
@@ -612,7 +668,8 @@ void generateSwiftSpamCodeFile(NSString *outDirectory, NSString *swiftFilePath) 
         
         NSString *className = [swiftFileContent substringWithRange:[classResult rangeAtIndex:2]];
         
-        NSString *fileName = [NSString stringWithFormat:@"%@%@Ext.swift", className, gOutParameterName.capitalizedString];
+        NSString *paramterName = gOutParameterName == nil ? @"" : gOutParameterName.capitalizedString;
+        NSString *fileName = [NSString stringWithFormat:@"%@%@Ext.swift", className, paramterName];
         NSString *filePath = [outDirectory stringByAppendingPathComponent:fileName];
         NSString *fileContent = @"";
         if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
